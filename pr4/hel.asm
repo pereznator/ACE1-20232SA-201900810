@@ -164,6 +164,7 @@
   modoCalculadora:
     mov num1, 00
     mov num2, 00
+
     mov dx, offset msjIngresarNumero
     mov ah, 09
     int 21
@@ -235,8 +236,33 @@
     je dividir
     jne error
 
+  
+  pedirOtroOIgual:
+    mov dx, offset msjOperadorOIgual
+    mov ah, 09h
+    int 21h
 
-    jmp imprimirMenu
+    mov ah, 01h
+    int 21
+    cmp al, '='
+    je numAstr
+
+    mov bl, result 
+    mov num1, bl 
+    mov num2, 00
+    mov bl, 00
+
+    mov [operador], al
+
+    cmp al, '+'
+    je ingresarOtroNumero
+    cmp al, '-'
+    je ingresarOtroNumero
+    cmp al, '*'
+    je ingresarOtroNumero
+    cmp al, '/'
+    je ingresarOtroNumero
+    jne errorOp
 
   sumar:
     mov ah, 0000h
@@ -244,7 +270,7 @@
     mov al, num1   ; Cargar el primer número en AL
     add al, num2   ; Sumar el segundo número a AL
     mov result, al  ; Almacenar el resultado en la variable resultado
-    jmp numAstr
+    jmp pedirOtroOIgual
 
   restar:
     mov ah, 0000h
@@ -252,7 +278,7 @@
     mov al, num1   ; Cargar el primer número en AL
     sub al, num2   ; Sumar el segundo número a AL
     mov result, al  ; Almacenar el resultado en la variable resultado
-    jmp numAstr
+    jmp pedirOtroOIgual
 
   multiplicar:
     mov ah, 0000h
@@ -260,19 +286,15 @@
     mov al, num1   ; Cargar el primer número en AL
     mul num2   ; Sumar el segundo número a AL
     mov result, al  ; Almacenar el resultado en la variable resultado
-    jmp numAstr
+    jmp pedirOtroOIgual
 
-
-  
   dividir:
     mov al, [num1]  ; Cargar el número que se va a dividir en AL
     mov bl, num2     ; Cargar el divisor en BL
     xor ah, ah       ; Limpiar AH (parte alta de AX)
     div bl           ; Realizar la división
     mov result, al   ; Almacenar el resultado en la variable resultado
-    jmp numAstr
-   
-  
+    jmp pedirOtroOIgual  
 
   numAstr:
     mov al, result 
